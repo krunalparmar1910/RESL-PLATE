@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/landing.css" />
+    <link rel="stylesheet" href="css/accepted_requested.css" />
+    <title><%= pageTitle %></title>
+  </head>
+  <body>
+    <div id="navbar">
+      <a href="/dashboard"
+        ><img src="./images/Vector(1).svg" alt="Logo..."
+      /></a>
+      <form method="post" action="/logout">
+        <input type="image" src="./images/power.svg" alt="Submit" />
+      </form>
+    </div>
+    <div class="content">
+      <div class="tab-content">
+        <a href="/donations">My donations</a>
+        <a href="/foodRequest">Food requests</a>
+        <a href="accepted_requested.html" class="active-link"
+          >Accepted requests</a
+        >
+      </div>
+    </div>
+    <div class="section">
+      <% if (foodData.length > 0) { %> <% foodData.forEach((food, index) => { %>
+      <div class="main-content">
+        <button type="button" class="active-button">
+          <span class="header"><%= userDetails[index] %></span>
+          <img src="<%= food.image %>" alt="food image" />
+          <div><%= food.name %></div>
+        </button>
+      </div>
+      <% }) %> <% } %> <% if (foodData.length > 0) { %> <%
+      foodData.forEach((food, index) => { %>
+      <div class="chat-content">
+        <i class="fas fa-arrow-left hidden" onClick="hideChat()"></i>
+        <div class="chat-info">
+          <h1>Chat</h1>
+          <p class="with">Krunal Parmar</p>
+          <p class="mobile">9106018903</p>
+        </div>
+        <div class="chat-box">
+          <div class="chat-display" id="chat-display-box">
+            <div class="to">
+                Hi! I wanted to thank you for your help earlier. It really made a difference!
+            </div>
+            <div class="from">
+                You're welcome! I'm glad I could assist. If you need anything else, just let me know.
+            </div>
+            <div class="to">
+                Sure! By the way, I might need help with another issue. Is it okay to reach out again?
+            </div>
+            <div class="from">
+                Absolutely! Feel free to reach out anytime. I'm here to help.
+            </div>
+            <div class="to">
+                Great! Thank you so much. I'll keep that in mind.
+            </div>
+            <div class="from">
+                No problem! Have a great day ahead!
+            </div>
+        </div>
+          <form class="chat-inupt" id="message-form">
+            <input
+              type="text"
+              name="chatinput"
+              id="input-message"
+              placeholder="Type your message here"
+            />
+            <input type="submit" value="Send" id="send-message" />
+          </form>
+        </div>
+      </div>
+      <% }) %> <% } else {%>
+      <div class="nocontent-container">
+        <img src="images/frezer.svg" alt="Icon..." />
+        <p>No request has been accepted yet.</p>
+      </div>
+      <% } %>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      // Get references to DOM elements
+      const messageForm = document.getElementById("message-form");
+      const messageInput = document.getElementById("input-message");
+      const messagesList = document.getElementById("chat-display-box");
+
+      // Listen for 'message' events from the server
+      socket.on("message", (data) => {
+        const li = document.createElement("li");
+        li.textContent = data;
+        messagesList.appendChild(li);
+      });
+
+      // Send message when form is submitted
+      messageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const message = messageInput.value;
+        socket.emit("message", message);
+        messageInput.value = "";
+      });
+    </script>
+  </body>
+</html>
